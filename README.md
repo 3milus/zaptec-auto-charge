@@ -1,17 +1,15 @@
 # Zaptec Auto Charge
 
-Runs every night at 22:00 Danish time via GitHub Actions. If your Ioniq 5 is
-plugged into the charger, not yet charging, and its battery is below a
-target percentage, it sends a resume command so you don't have to remember
-to start it in the Zaptec app.
+Runs every night at 20:00 UTC via GitHub Actions (22:00 Danish time in
+summer/CEST; 21:00 in winter/CET, since the schedule is a fixed UTC time and
+doesn't adjust for DST). If your Ioniq 5 is plugged into the charger, not
+yet charging, and its battery is below a target percentage, it sends a
+resume command so you don't have to remember to start it in the Zaptec app.
 
 ## How it works
 
 - A GitHub Actions scheduled workflow (`.github/workflows/auto-charge.yml`)
-  fires at both 20:00 and 21:00 UTC every day, since GitHub cron only
-  understands UTC and Denmark alternates between UTC+1 (CET) and UTC+2
-  (CEST). The script checks the real Copenhagen clock and only acts on the
-  run that actually lands at 22:00 local time; the other run is a no-op.
+  fires at a fixed 20:00 UTC every day.
 - The script logs into ZapCloud, reads the charger's state, and:
   - does nothing if no car is connected,
   - does nothing if it's already charging,
@@ -46,10 +44,8 @@ to start it in the Zaptec app.
      sensitive) named `TARGET_BATTERY_PERCENT` if you want something other
      than the default of 80.
 3. **Test it manually** — GitHub repo -> Actions tab -> "Zaptec Auto Charge"
-   -> "Run workflow". This runs immediately regardless of the time of day
-   (the 22:00-only check only applies to the two scheduled cron triggers,
-   not to manual runs) so you can verify it works end to end. Check the run
-   logs for what it decided to do.
+   -> "Run workflow". This runs immediately so you can verify it works end
+   to end. Check the run logs for what it decided to do.
 4. If a scheduled run fails, GitHub emails the repo owner by default, so
    you'll find out if something breaks.
 

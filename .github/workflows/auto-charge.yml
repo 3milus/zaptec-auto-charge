@@ -3,12 +3,9 @@ name: Zaptec Auto Charge
 on:
   schedule:
     # GitHub Actions cron always runs in UTC and can't reference a named
-    # timezone, so we trigger at both possible UTC offsets for 22:00 in
-    # Copenhagen (CEST = UTC+2 in summer, CET = UTC+1 in winter). The script
-    # itself checks the local Copenhagen clock and skips the run that lands
-    # on the wrong offset for the current time of year.
+    # timezone. Fixed at 20:00 UTC = 22:00 Copenhagen time in summer (CEST);
+    # drifts to 21:00 local in winter (CET) since this doesn't adjust for DST.
     - cron: "0 20 * * *"
-    - cron: "0 21 * * *"
   workflow_dispatch: {}
 
 jobs:

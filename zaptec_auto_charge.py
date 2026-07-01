@@ -1,7 +1,7 @@
 """
-Checks a Zaptec charger every night at 22:00 Danish time and resumes charging
-if a car is plugged in, not yet charging, and its battery is below the
-target percentage.
+Checks a Zaptec charger and resumes charging if a car is plugged in, not
+yet charging, and its battery is below the target percentage. Intended to
+be run nightly via a scheduled GitHub Actions workflow.
 
 Required environment variables:
   ZAPTEC_USERNAME    - ZapCloud login email
@@ -47,7 +47,6 @@ HYUNDAI_BRAND_HYUNDAI = 2
 DEFAULT_TARGET_BATTERY_PERCENT = 80
 
 LOCAL_TZ = ZoneInfo("Europe/Copenhagen")
-TARGET_HOUR = 14
 
 
 def log(message: str) -> None:
@@ -131,14 +130,6 @@ def get_car_battery_percentage(
 
 
 def main() -> int:
-    now = datetime.now(LOCAL_TZ)
-    if now.hour != TARGET_HOUR:
-        log(
-            f"Current Copenhagen time is {now:%H:%M}, not {TARGET_HOUR}:00 - "
-            "skipping (this run exists only to cover both DST offsets)."
-        )
-        return 0
-
     username = os.environ["ZAPTEC_USERNAME"]
     password = os.environ["ZAPTEC_PASSWORD"]
     configured_charger_id = os.environ.get("ZAPTEC_CHARGER_ID")
