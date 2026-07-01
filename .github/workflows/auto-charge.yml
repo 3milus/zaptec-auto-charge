@@ -1,0 +1,34 @@
+name: Zaptec Auto Charge
+
+on:
+  schedule:
+    # GitHub Actions cron always runs in UTC and can't reference a named
+    # timezone, so we trigger at both possible UTC offsets for 22:00 in
+    # Copenhagen (CEST = UTC+2 in summer, CET = UTC+1 in winter). The script
+    # itself checks the local Copenhagen clock and skips the run that lands
+    # on the wrong offset for the current time of year.
+    - cron: "0 20 * * *"
+    - cron: "0 21 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  charge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - run: python zaptec_auto_charge.py
+        env:
+          ZAPTEC_USERNAME: ${{ secrets.ZAPTEC_USERNAME }}
+          ZAPTEC_PASSWORD: ${{ secrets.ZAPTEC_PASSWORD }}
+          ZAPTEC_CHARGER_ID: ${{ secrets.ZAPTEC_CHARGER_ID }}
+          HYUNDAI_USERNAME: ${{ secrets.HYUNDAI_USERNAME }}
+          HYUNDAI_PASSWORD: ${{ secrets.HYUNDAI_PASSWORD }}
+          HYUNDAI_VEHICLE_ID: ${{ secrets.HYUNDAI_VEHICLE_ID }}
+          TARGET_BATTERY_PERCENT: ${{ vars.TARGET_BATTERY_PERCENT }}
