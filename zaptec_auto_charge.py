@@ -47,7 +47,7 @@ HYUNDAI_BRAND_HYUNDAI = 2
 DEFAULT_TARGET_BATTERY_PERCENT = 80
 
 LOCAL_TZ = ZoneInfo("Europe/Copenhagen")
-TARGET_HOUR = 22
+TARGET_HOUR = 14
 
 
 def log(message: str) -> None:
