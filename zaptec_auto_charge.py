@@ -169,16 +169,22 @@ def main() -> int:
         log("Already charging. Nothing to do.")
     elif mode == MODE_REQUESTING or (mode == MODE_CONNECTED_FINISHED and final_stop_active):
         log("Vehicle connected but not charging. Checking battery state via Bluelink...")
-        battery_percent = get_car_battery_percentage(
-            hyundai_username, hyundai_password, configured_vehicle_id
-        )
-        log(f"Car battery at {battery_percent}%.")
-        if battery_percent < target_battery_percent:
-            log(f"Below target of {target_battery_percent}%. Sending resume command...")
+        try:
+            battery_percent = get_car_battery_percentage(
+                hyundai_username, hyundai_password, configured_vehicle_id
+            )
+        except Exception as exc:  # noqa: BLE001 - Bluelink is best-effort, fail open
+            log(f"Could not reach Bluelink ({exc}). Approving charge anyway.")
             resume_charging(session, charger_id)
             log("Resume command sent.")
         else:
-            log(f"Already at or above target of {target_battery_percent}%. Not starting charge.")
+            log(f"Car battery at {battery_percent}%.")
+            if battery_percent < target_battery_percent:
+                log(f"Below target of {target_battery_percent}%. Sending resume command...")
+                resume_charging(session, charger_id)
+                log("Resume command sent.")
+            else:
+                log(f"Already at or above target of {target_battery_percent}%. Not starting charge.")
     else:
         log(f"Unhandled charger mode {mode} (finalStopActive={final_stop_active}). Nothing to do.")
 

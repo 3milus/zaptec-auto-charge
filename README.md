@@ -20,6 +20,11 @@ to start it in the Zaptec app.
     cloud's cached state (no forced wake-up of the car, so it doesn't drain
     the 12V battery), then sends the "resume charging" command (507) only if
     the battery is below `TARGET_BATTERY_PERCENT` (default 80).
+  - if Bluelink can't be reached at all (login failure, API error, etc.),
+    the script fails open: it approves and starts charging anyway rather
+    than leaving the car unplugged-but-idle overnight. Check the run logs
+    if this happens, since it means the battery threshold wasn't honored
+    for that night.
 
 ## One-time setup
 
